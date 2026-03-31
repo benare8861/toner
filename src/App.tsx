@@ -1,282 +1,312 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { useState, useMemo, ReactNode } from 'react';
-import { 
-  Package, 
-  Search, 
-  AlertCircle, 
-  CheckCircle2, 
-  ArrowUpDown, 
-  Filter,
-  LayoutDashboard,
-  Database,
-  Printer
-} from 'lucide-react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { 
+  ArrowRight, 
+  Menu, 
+  X, 
+  Instagram, 
+  Twitter, 
+  Facebook,
+  ChevronRight,
+  Star,
+  Shield,
+  Zap,
+  Heart
+} from 'lucide-react';
 
-// ข้อมูลที่ดึงมาจากรูปภาพ
-const TONER_DATA = [
-  { id: 1, model: '85a', quantity: 50, brand: 'HP' },
-  { id: 2, model: '107a', quantity: 20, brand: 'HP' },
-  { id: 3, model: '462XL', quantity: 41, brand: 'Brother' },
-  { id: 4, model: '79a', quantity: 10, brand: 'HP' },
-  { id: 5, model: 'tn1000', quantity: 50, brand: 'Brother' },
-  { id: 6, model: '630', quantity: 70, brand: 'Canon' },
-  { id: 7, model: '17a', quantity: 41, brand: 'HP' },
-  { id: 8, model: '204a', quantity: 58, brand: 'HP' },
-  { id: 9, model: 'pantum', quantity: 4, brand: 'Pantum' },
-  { id: 10, model: '215a', quantity: 41, brand: 'HP' },
-  { id: 11, model: 'HP054', quantity: 8, brand: 'HP' },
-  { id: 12, model: '3619', quantity: 77, brand: 'Brother' },
-];
-
-export default function App() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<{ key: 'model' | 'quantity', direction: 'asc' | 'desc' } | null>(null);
-
-  const filteredData = useMemo(() => {
-    let data = [...TONER_DATA];
-    
-    if (searchTerm) {
-      data = data.filter(item => 
-        item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.brand.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (sortConfig) {
-      data.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return data;
-  }, [searchTerm, sortConfig]);
-
-  const stats = useMemo(() => {
-    const total = TONER_DATA.reduce((acc, curr) => acc + curr.quantity, 0);
-    const lowStock = TONER_DATA.filter(item => item.quantity < 15).length;
-    const modelsCount = TONER_DATA.length;
-    return { total, lowStock, modelsCount };
-  }, []);
-
-  const handleSort = (key: 'model' | 'quantity') => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
+const Navbar = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 font-sans selection:bg-indigo-100">
-      {/* แถบเมนูด้านข้าง (คอมพิวเตอร์) */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col p-6 z-10">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-            <Printer size={20} />
-          </div>
-          <span className="font-bold text-xl tracking-tight">InkFlow</span>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-pearl/80 backdrop-blur-md border-b border-payne/10">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="text-2xl font-serif font-bold tracking-tighter text-payne">
+          PEARL & PAYNE
         </div>
-
-        <nav className="space-y-2">
-          <NavItem icon={<LayoutDashboard size={18} />} label="แดชบอร์ด" active />
-          <NavItem icon={<Database size={18} />} label="คลังสินค้า" />
-          <NavItem icon={<Filter size={18} />} label="รายงาน" />
-        </nav>
-
-        <div className="mt-auto p-4 bg-slate-50 rounded-2xl border border-slate-100">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">สถานะระบบ</p>
-          <div className="flex items-center gap-2 text-sm text-emerald-600 font-medium">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            พร้อมใช้งาน
-          </div>
-        </div>
-      </aside>
-
-      {/* เนื้อหาหลัก */}
-      <main className="lg:ml-64 p-4 md:p-8 lg:p-12 max-w-7xl mx-auto">
-        {/* ส่วนหัว */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div>
-            <motion.h1 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-2"
+        
+        <div className="hidden md:flex items-center gap-12">
+          {['Collections', 'About', 'Studio', 'Contact'].map((item) => (
+            <a 
+              key={item} 
+              href={`#${item.toLowerCase()}`}
+              className="text-sm font-medium uppercase tracking-widest hover:text-payne/60 transition-colors"
             >
-              จำนวนหมึกที่เหลือ (ศูนย์คอม)
-            </motion.h1>
-            <p className="text-slate-500">จัดการและตรวจสอบคลังวัสดุการพิมพ์แบบเรียลไทม์</p>
-          </div>
-
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="ค้นหาตามรุ่นหรือยี่ห้อ..."
-              className="pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl w-full md:w-80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </header>
-
-        {/* ส่วนสถิติ */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard 
-            label="จำนวนทั้งหมด" 
-            value={stats.total.toLocaleString()} 
-            icon={<Package className="text-indigo-600" size={24} />}
-            trend="+12% จากเดือนที่แล้ว"
-          />
-          <StatCard 
-            label="สินค้าใกล้หมด" 
-            value={stats.lowStock} 
-            icon={<AlertCircle className="text-amber-500" size={24} />}
-            trend="ต้องการการตรวจสอบ"
-            warning={stats.lowStock > 0}
-          />
-          <StatCard 
-            label="รุ่นที่ใช้งานอยู่" 
-            value={stats.modelsCount} 
-            icon={<CheckCircle2 className="text-emerald-500" size={24} />}
-            trend="ทุกยี่ห้อพร้อมใช้งาน"
-          />
+              {item}
+            </a>
+          ))}
         </div>
 
-        {/* ตารางคลังสินค้า */}
-        <motion.div 
-          layout
-          className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden"
+        <div className="hidden md:block">
+          <button className="px-8 py-3 bg-payne text-pearl rounded-full text-sm font-semibold hover:bg-payne/90 transition-all transform hover:scale-105">
+            Inquire Now
+          </button>
+        </div>
+
+        <button 
+          className="md:hidden text-payne"
+          onClick={() => setIsOpen(!isOpen)}
         >
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/50 border-bottom border-slate-100">
-                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">ยี่ห้อ</th>
-                  <th 
-                    className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-indigo-600 transition-colors"
-                    onClick={() => handleSort('model')}
-                  >
-                    <div className="flex items-center gap-2">
-                      รุ่น <ArrowUpDown size={14} />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-indigo-600 transition-colors"
-                    onClick={() => handleSort('quantity')}
-                  >
-                    <div className="flex items-center gap-2">
-                      จำนวน <ArrowUpDown size={14} />
-                    </div>
-                  </th>
-                  <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">สถานะ</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                <AnimatePresence mode="popLayout">
-                  {filteredData.map((item) => (
-                    <motion.tr 
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="group hover:bg-slate-50/50 transition-colors"
-                    >
-                      <td className="px-8 py-5">
-                        <span className="text-sm font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-tight">
-                          {item.brand}
-                        </span>
-                      </td>
-                      <td className="px-8 py-5">
-                        <span className="text-base font-bold text-slate-900">{item.model}</span>
-                      </td>
-                      <td className="px-8 py-5">
-                        <div className="flex items-center gap-3">
-                          <span className={`text-lg font-mono font-bold ${item.quantity < 15 ? 'text-amber-600' : 'text-slate-700'}`}>
-                            {item.quantity}
-                          </span>
-                          <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${Math.min((item.quantity / 80) * 100, 100)}%` }}
-                              className={`h-full rounded-full ${item.quantity < 15 ? 'bg-amber-400' : 'bg-indigo-500'}`}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-5">
-                        {item.quantity < 15 ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold">
-                            <AlertCircle size={12} /> สินค้าใกล้หมด
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
-                            <CheckCircle2 size={12} /> มีสินค้า
-                          </span>
-                        )}
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
+          {isOpen ? <X /> : <Menu />}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-pearl border-b border-payne/10 px-6 py-8 flex flex-col gap-6"
+          >
+            {['Collections', 'About', 'Studio', 'Contact'].map((item) => (
+              <a 
+                key={item} 
+                href={`#${item.toLowerCase()}`}
+                className="text-lg font-serif italic"
+                onClick={() => setIsOpen(false)}
+              >
+                {item}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
+
+const Hero = () => {
+  return (
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <span className="inline-block px-4 py-1 rounded-full border border-payne/20 text-xs font-bold tracking-widest uppercase mb-6">
+            Spring Collection 2026
+          </span>
+          <h1 className="text-6xl md:text-8xl font-serif leading-[0.9] mb-8 text-payne">
+            The Art of <br />
+            <span className="italic">Refinement</span>
+          </h1>
+          <p className="text-lg text-payne/70 max-w-md mb-10 leading-relaxed">
+            Discover a curated experience where timeless elegance meets modern sophistication. 
+            Crafted with the finest materials and an eye for detail.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <button className="px-10 py-4 bg-payne text-pearl rounded-full font-bold flex items-center gap-2 hover:gap-4 transition-all">
+              Explore Collection <ArrowRight size={18} />
+            </button>
+            <button className="px-10 py-4 border border-payne text-payne rounded-full font-bold hover:bg-payne/5 transition-all">
+              Our Story
+            </button>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="relative"
+        >
+          <div className="aspect-[4/5] bg-payne/10 rounded-[40px] overflow-hidden relative">
+            <img 
+              src="https://picsum.photos/seed/luxury/800/1000" 
+              alt="Luxury Interior" 
+              className="w-full h-full object-cover mix-blend-multiply opacity-80"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-pearl/40 to-transparent" />
           </div>
           
-          {filteredData.length === 0 && (
-            <div className="p-20 text-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
-                <Search size={24} />
+          {/* Floating elements */}
+          <motion.div 
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -bottom-10 -left-10 bg-pearl p-8 rounded-3xl shadow-2xl border border-payne/5 hidden lg:block"
+          >
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-12 h-12 bg-payne rounded-full flex items-center justify-center text-pearl">
+                <Star size={20} fill="currentColor" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1">ไม่พบข้อมูล</h3>
-              <p className="text-slate-500">ลองปรับการค้นหาหรือตัวกรองของคุณ</p>
+              <div>
+                <div className="text-sm font-bold">Premium Quality</div>
+                <div className="text-xs text-payne/50">Certified Excellence</div>
+              </div>
             </div>
-          )}
+          </motion.div>
         </motion.div>
-      </main>
+      </div>
+      
+      {/* Background decoration */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/3 h-2/3 bg-payne/5 rounded-l-full -z-10 blur-3xl" />
+    </section>
+  );
+};
+
+const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: any, title: string, description: string, delay: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+    className="p-10 bg-payne/5 rounded-[32px] border border-payne/10 hover:border-payne/30 transition-all group"
+  >
+    <div className="w-14 h-14 bg-pearl rounded-2xl flex items-center justify-center text-payne mb-8 group-hover:scale-110 transition-transform shadow-sm">
+      <Icon size={28} />
     </div>
-  );
-}
+    <h3 className="text-2xl font-serif mb-4">{title}</h3>
+    <p className="text-payne/60 leading-relaxed">{description}</p>
+  </motion.div>
+);
 
-function NavItem({ icon, label, active = false }: { icon: ReactNode, label: string, active?: boolean }) {
+const Features = () => {
   return (
-    <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-      active 
-        ? 'bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100' 
-        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-    }`}>
-      {icon}
-      {label}
-    </button>
-  );
-}
+    <section id="studio" className="py-32 bg-pearl">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+          <div className="max-w-2xl">
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-payne/50 mb-4 block">Our Philosophy</span>
+            <h2 className="text-5xl md:text-6xl font-serif leading-tight">
+              Crafting experiences that <span className="italic">resonate</span> with the soul.
+            </h2>
+          </div>
+          <p className="text-payne/60 max-w-sm pb-2">
+            We believe in the power of simplicity and the beauty of natural materials. 
+            Every piece is a testament to our dedication.
+          </p>
+        </div>
 
-function StatCard({ label, value, icon, trend, warning = false }: { label: string, value: string | number, icon: ReactNode, trend: string, warning?: boolean }) {
-  return (
-    <motion.div 
-      whileHover={{ y: -4 }}
-      className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-2xl ${warning ? 'bg-amber-50' : 'bg-indigo-50'}`}>
-          {icon}
+        <div className="grid md:grid-cols-3 gap-8">
+          <FeatureCard 
+            icon={Shield}
+            title="Timeless Design"
+            description="Our aesthetic transcends trends, focusing on enduring beauty and functional elegance."
+            delay={0.1}
+          />
+          <FeatureCard 
+            icon={Zap}
+            title="Modern Craft"
+            description="Combining traditional techniques with contemporary innovation for superior results."
+            delay={0.2}
+          />
+          <FeatureCard 
+            icon={Heart}
+            title="Ethical Sourcing"
+            description="We prioritize sustainability and fair practices in every step of our creative process."
+            delay={0.3}
+          />
         </div>
       </div>
-      <div>
-        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-        <h3 className="text-3xl font-bold text-slate-900 mb-2">{value}</h3>
-        <p className={`text-xs font-semibold ${warning ? 'text-amber-600' : 'text-slate-400'}`}>{trend}</p>
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-payne text-pearl pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-4 gap-16 mb-24">
+          <div className="col-span-2">
+            <div className="text-3xl font-serif font-bold mb-8">PEARL & PAYNE</div>
+            <p className="text-pearl/60 max-w-md leading-relaxed mb-10">
+              Elevating the everyday through thoughtful design and impeccable craftsmanship. 
+              Join our journey towards a more refined world.
+            </p>
+            <div className="flex gap-6">
+              <Instagram className="hover:text-pearl/50 cursor-pointer transition-colors" />
+              <Twitter className="hover:text-pearl/50 cursor-pointer transition-colors" />
+              <Facebook className="hover:text-pearl/50 cursor-pointer transition-colors" />
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-bold uppercase tracking-widest mb-8">Quick Links</h4>
+            <ul className="flex flex-col gap-4 text-pearl/70">
+              <li className="hover:text-pearl transition-colors cursor-pointer">Collections</li>
+              <li className="hover:text-pearl transition-colors cursor-pointer">Our Studio</li>
+              <li className="hover:text-pearl transition-colors cursor-pointer">Journal</li>
+              <li className="hover:text-pearl transition-colors cursor-pointer">Contact</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-bold uppercase tracking-widest mb-8">Newsletter</h4>
+            <p className="text-sm text-pearl/60 mb-6">Stay updated with our latest releases.</p>
+            <div className="flex border-b border-pearl/20 pb-2">
+              <input 
+                type="email" 
+                placeholder="Your email" 
+                className="bg-transparent border-none outline-none flex-1 text-sm placeholder:text-pearl/30"
+              />
+              <button className="text-pearl/50 hover:text-pearl transition-colors">
+                <ChevronRight />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-12 border-t border-pearl/10 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-pearl/40 uppercase tracking-widest">
+          <div>© 2026 Pearl & Payne. All rights reserved.</div>
+          <div className="flex gap-8">
+            <span className="hover:text-pearl cursor-pointer transition-colors">Privacy Policy</span>
+            <span className="hover:text-pearl cursor-pointer transition-colors">Terms of Service</span>
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </footer>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="bg-pearl selection:bg-payne selection:text-pearl">
+      <Navbar />
+      <main>
+        <Hero />
+        <Features />
+        
+        {/* Quote Section */}
+        <section className="py-40 bg-payne/5 text-center">
+          <div className="max-w-4xl mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-6xl font-serif italic mb-12 text-payne leading-tight">
+                "Simplicity is the ultimate sophistication."
+              </h2>
+              <div className="w-20 h-px bg-payne/20 mx-auto mb-8" />
+              <p className="text-sm font-bold uppercase tracking-[0.4em] text-payne/40">Leonardo da Vinci</p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Call to Action */}
+        <section className="py-32">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="bg-payne rounded-[48px] p-12 md:p-24 text-center relative overflow-hidden">
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-6xl font-serif text-pearl mb-8">Ready to transform your space?</h2>
+                <p className="text-pearl/70 max-w-xl mx-auto mb-12 text-lg">
+                  Book a consultation with our design experts and start your journey towards elegance today.
+                </p>
+                <button className="px-12 py-5 bg-pearl text-payne rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                  Get Started
+                </button>
+              </div>
+              
+              {/* Abstract shapes */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-pearl/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-pearl/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }
